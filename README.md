@@ -8,9 +8,13 @@ representing the stock/fund with the highest trade volume for the given date
 3. Overall implied volume: one record per stock/fund,
 sorted in descending order by the implied volume amount for each stock
 
-For the first 2 analyses, it also compares two methodologies: sessionization and a
-SQL-like approach that consists of joining multiple datasets, much like joining tables
-in an RDBMS.
+The task was to implement several SQL queries (located in the resources directory),
+each of which handles one of the above analyses, using the Apache Spark API.
+For the first 2 analyses, it compares two methodologies: a SQL-like approach that
+consists of joining multiple datasets, modeled after the related example queries, and
+sessionization. The third analysis is not eligible for this comparison, as the related
+example query does not employ any join logic, so the application only runs a
+sessionization program for it.
 
 I wanted to run this comparison of sessionization and joining logic to demonstrate
 different approaches to analyzing this data, as well as to determine which approach

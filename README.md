@@ -1,6 +1,7 @@
 # XetraMetrics
 This application runs three separate analyses against the public XETRA
-dataset from Deutsche Bank:
+dataset from Deutsche Bank (publicly available at s3://deutsche-boerse-xetra-pds on AWS
+or at <link>https://drive.google.com/open?id=1QmcwvzyWp7RBwPSagQoIbbZqe_6E9jaC</link> on Google Docs):
 1. Daily biggest winners: one record per date, sorted by date,
 representing the stock/fund with the largest gain for the given date
 2. Daily biggest volumes: one record per date, sorted by date,
@@ -8,7 +9,9 @@ representing the stock/fund with the highest trade volume for the given date
 3. Overall implied volume: one record per stock/fund,
 sorted in descending order by the implied volume amount for each stock
 
-The task was to implement several SQL queries (located in the resources directory),
+The task was to implement several SQL queries from
+https://github.com/Deutsche-Boerse/dbg-pds/tree/master/examples/sql (located in the
+resources directory),
 each of which handles one of the above analyses, using the Apache Spark API.
 For the first 2 analyses, it compares two methodologies: a SQL-like approach that
 consists of joining multiple datasets, modeled after the related example queries, and

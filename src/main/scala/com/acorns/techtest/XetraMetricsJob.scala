@@ -192,12 +192,9 @@ class XetraMetricsJob(sparkSession: SparkSession) {
   }
 
   private def getTradeActivities(sparkSession: SparkSession): Dataset[TradeActivity] = {
-    val resourcesPath = ResourceUtils.getLocalPath("src/main/resources/data-set")
-
     sparkSession.read
       .option("header", "true")
       .option("inferSchema", true)
-//      .csv(s"$resourcesPath/*/*.csv")
       .csv("src/main/resources/data-set/*/*.csv")
       .as[TradeActivity]
   }

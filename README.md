@@ -1,7 +1,8 @@
 # XetraMetrics
 This application runs three separate analyses against the public XETRA
 dataset from Deutsche Bank (publicly available at s3://deutsche-boerse-xetra-pds on AWS
-or at <link>https://drive.google.com/open?id=1QmcwvzyWp7RBwPSagQoIbbZqe_6E9jaC</link> on Google Docs):
+or at <link>https://drive.google.com/open?id=1QmcwvzyWp7RBwPSagQoIbbZqe_6E9jaC</link>
+on Google Drive):
 1. Daily biggest winners: one record per date, sorted by date,
 representing the stock/fund with the largest gain for the given date
 2. Daily biggest volumes: one record per date, sorted by date,
@@ -28,6 +29,25 @@ small app running on a local machine - but that would matter in a production sys
 that I am hesitant to make a real conclusion. This was simply an experiment and
 demonstration.</sub>*
 
+
+## Downloading the data
+The data is not included in this repo due to size constraints. After downloading the data
+from either S3 or Google Drive, you may have to decompress the file.
+~~~
+tar -xvf data-set.tar
+~~~
+
+Once this is done, the resultant file structure should look something like this (possibly
+with different dates):
+~~~
+├── data-set
+│   ├── 2018-02-01
+│   ├── 2018-02-02
+│   ├── 2018-02-05
+│   ├── 2018-02-06
+~~~
+
+Copy the directory `data-set/` into the project at `src/main/resources/`.
 
 ## Compiling and packaging the application
 ~~~

@@ -29,7 +29,6 @@ small app running on a local machine - but that would matter in a production sys
 that I am hesitant to make a real conclusion. This was simply an experiment and
 demonstration.</sub>*
 
-
 ## Downloading the data
 The data is not included in this repo due to size constraints. After downloading the data
 from either S3 or Google Drive, you may have to decompress the file.
@@ -60,6 +59,7 @@ You'll want to run in client mode so you can see the output.
 spark2-submit \
 --class com.acorns.techtest.XetraMetrics \
 --deploy-mode client
+~~~
 
 ## Verifying the output
 First, a 10 record sample of the XETRA source data will be printed to stdout, along with the total row count of the source data.

@@ -171,4 +171,5 @@ then maps through each group once to update a state, which it then outputs. Cont
 the join logic requires multiple shuffle, map, and reduce steps.
 
 Given that the outputs are identical for both methodologies in each analysis, and
-sessionization is much more performant, it seems that sessionization is the way to go. 
+sessionization is much more performant, it seems that sessionization is the way to go
+(at least, for this dataset, and given the current constraints). 

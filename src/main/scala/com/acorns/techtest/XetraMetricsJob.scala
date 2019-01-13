@@ -6,7 +6,7 @@ import com.acorns.techtest.biggestvolume.DailyBiggestVolumes
 import com.acorns.techtest.biggestwinner.DailyBiggestWinners
 import com.acorns.techtest.schema.TradeActivity
 import com.acorns.techtest.securityvolume.SecurityVolumes
-import com.acorns.techtest.util.{OutputStringUtils, ResourceUtils}
+import com.acorns.techtest.util.OutputStringUtils
 import org.apache.commons.lang3.time.StopWatch
 import org.apache.spark.sql.functions.concat
 import org.apache.spark.sql.{Dataset, SparkSession}

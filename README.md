@@ -1,5 +1,6 @@
 # XetraMetrics
-####Description
+
+#### Description
 This application runs three separate analyses against the public XETRA
 dataset from Deutsche Bank (publicly available at s3://deutsche-boerse-xetra-pds on AWS
 or at <link>https://drive.google.com/open?id=1QmcwvzyWp7RBwPSagQoIbbZqe_6E9jaC</link>
@@ -11,7 +12,7 @@ representing the stock/fund with the highest trade volume for the given date
 3. Overall implied volume: one record per stock/fund,
 sorted in descending order by the implied volume amount for each stock
 
-####High-Level Overview
+#### High-Level Overview
 The task was to implement several SQL queries from
 https://github.com/Deutsche-Boerse/dbg-pds/tree/master/examples/sql (located in the
 resources directory),

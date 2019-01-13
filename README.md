@@ -61,6 +61,7 @@ TradeActivity(DE000A0X9AA8,DES2,ETFS DAX DLY2XSH.GO UC.DZ,ETF,EUR,2504257,2018-0
 TradeActivity(DE000ETFL011,EL4A,DK DAX,ETF,EUR,2504258,2018-02-06 00:00:00,09:00,114.08,114.08,114.08,114.08,10,1)
 ------------------------------
 
+
 /*****************************
      DAILY BIGGEST WINNERS
 *****************************/

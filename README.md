@@ -14,7 +14,7 @@ in an RDBMS.
 
 I wanted to run this comparison of sessionization and joining logic to demonstrate
 different approaches to analyzing this data, as well as to determine which approach
-might be "better."
+might be "better."__*__
 
 *<sub>\*I say "better" because there are so many constraints that don't apply to this
 small app running on a local machine - but that would matter in a production system -

@@ -10,9 +10,12 @@ object XetraMetrics {
   Logger.getLogger("akka").setLevel(Level.WARN)
 
   def main(args: Array[String]): Unit = {
+    val jobOptions = new JobOptions(args)
+    val filePath = jobOptions.filePath
+
     val sparkSession = SparkUtils.getSparkSession("XetraMetrics")
 
-    val xetraMetrics = new XetraMetricsJob(sparkSession)
+    val xetraMetrics = new XetraMetricsJob(filePath, sparkSession)
 
     xetraMetrics.showMetrics()
   }

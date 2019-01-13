@@ -49,7 +49,7 @@ with different dates):
 │   ├── 2018-02-06
 ~~~
 
-Copy the directory `data-set/` into the project at `src/main/resources/`.
+Copy the directory `data-set/` wherever you want, either on your local machine or in HDFS.
 
 ## Compiling and packaging the application
 ~~~
@@ -57,11 +57,21 @@ mvn clean package
 ~~~
 
 ## Running the application
-You'll want to run in client mode so you can see the output.
+#### Running in your IDE
+Make sure to add a parameter for the file path of the data (`/path/to/data-set`).
+
+#### Running the jar
+You'll want to run in client mode so you can see the output. Make sure to add a parameter
+for the file path of the data. This is the same, whether you're running locally or on a
+cluster.
 ~~~
+PATH=/path/to/data-set
+
 spark2-submit \
 --class com.acorns.techtest.XetraMetrics \
---deploy-mode client
+--deploy-mode client \
+xetra-metrics-1.0.0-SNAPSHOT.jar \
+-p $PATH
 ~~~
 
 ## Verifying the output

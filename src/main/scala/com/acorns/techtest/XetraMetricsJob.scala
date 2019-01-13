@@ -11,7 +11,7 @@ import org.apache.commons.lang3.time.StopWatch
 import org.apache.spark.sql.functions.concat
 import org.apache.spark.sql.{Dataset, SparkSession}
 
-class XetraMetricsJob(sparkSession: SparkSession) {
+class XetraMetricsJob(filePath: String, sparkSession: SparkSession) {
   import sparkSession.implicits._
 
   def showMetrics(): Unit = {
@@ -198,7 +198,7 @@ class XetraMetricsJob(sparkSession: SparkSession) {
     sparkSession.read
       .option("header", "true")
       .option("inferSchema", true)
-      .csv("src/main/resources/data-set/*/*.csv")
+      .csv(s"$filePath/*/*.csv")
       .as[TradeActivity]
   }
 }

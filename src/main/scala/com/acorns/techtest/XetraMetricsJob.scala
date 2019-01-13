@@ -86,7 +86,6 @@ class XetraMetricsJob(sparkSession: SparkSession) {
       stringJoiner.add(row.toString)
     }
     stringJoiner.add(OutputStringUtils.get30Dashes)
-    stringJoiner.add("")
 
     stopWatch.reset()
     stopWatch.start()
@@ -139,7 +138,6 @@ class XetraMetricsJob(sparkSession: SparkSession) {
       stringJoiner.add(row.toString)
     }
     stringJoiner.add(OutputStringUtils.get30Dashes)
-    stringJoiner.add("")
 
     stopWatch.reset()
     stopWatch.start()

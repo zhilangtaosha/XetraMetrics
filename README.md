@@ -55,10 +55,11 @@ mvn clean package
 ~~~
 
 ## Running the application
+You'll want to run in client mode so you can see the output.
 ~~~
 spark2-submit \
---class com.acorns.techtest.XetraMetrics`
-~~~
+--class com.acorns.techtest.XetraMetrics \
+--deploy-mode client
 
 ## Verifying the output
 First, a 10 record sample of the XETRA source data will be printed to stdout, along with the total row count of the source data.
@@ -93,7 +94,7 @@ TradeActivity(DE000ETFL011,EL4A,DK DAX,ETF,EUR,2504258,2018-02-06 00:00:00,09:00
      DAILY BIGGEST WINNERS
 *****************************/
 
-Found 20 daily biggest winners by sessionizing in 3002 ms.
+Found 20 daily biggest winners by sessionizing in 2184 ms.
 -----SESSIONIZING SAMPLE------
 DailyBiggestWinner(2018-02-01 00:00:00,2505107,BEATE UHSE AG,0.44444444444444453)
 DailyBiggestWinner(2018-02-02 00:00:00,2506525,MATTEL INC.          DL 1,0.1885964912280702)
@@ -107,7 +108,7 @@ DailyBiggestWinner(2018-02-13 00:00:00,2505025,ARCANDOR AG O.N.,0.25)
 DailyBiggestWinner(2018-02-14 00:00:00,2504585,4SC AG,0.08714918759231917)
 ------------------------------
 
-Found 20 daily biggest winners by joining in 30278 ms.
+Found 20 daily biggest winners by joining in 26601 ms.
 --------JOINING SAMPLE--------
 DailyBiggestWinner(2018-02-01 00:00:00,2505107,BEATE UHSE AG,0.44444444444444453)
 DailyBiggestWinner(2018-02-02 00:00:00,2506525,MATTEL INC.          DL 1,0.1885964912280702)
@@ -132,7 +133,7 @@ Total diff count: 0
      DAILY BIGGEST VOLUMES
 *****************************/
 
-Found 20 daily biggest volumes by sessionizing in 1539 ms.
+Found 20 daily biggest volumes by sessionizing in 1462 ms.
 -----SESSIONIZING SAMPLE------
 DailyBiggestVolume(2018-02-01 00:00:00,2505076,DAIMLER AG NA O.N.,387.4346595899998)
 DailyBiggestVolume(2018-02-02 00:00:00,2504888,DEUTSCHE BANK AG NA O.N.,470.5393311520006)
@@ -146,7 +147,7 @@ DailyBiggestVolume(2018-02-13 00:00:00,2505077,SAP SE O.N.,186.5301399500002)
 DailyBiggestVolume(2018-02-14 00:00:00,2505088,SIEMENS AG NA,288.41335660000016)
 ------------------------------
 
-Found 20 daily biggest volumes by joining in 11570 ms.
+Found 20 daily biggest volumes by joining in 11558 ms.
 --------JOINING SAMPLE--------
 DailyBiggestVolume(2018-02-01 00:00:00,2505076,DAIMLER AG NA O.N.,387.4346595899998)
 DailyBiggestVolume(2018-02-02 00:00:00,2504888,DEUTSCHE BANK AG NA O.N.,470.5393311520006)
@@ -171,7 +172,7 @@ Total diff count: 0
      MOST TRADED STOCK/ETF
 *****************************/
 
-Found 2446 security volumes in 2378 ms.
+Found 2446 security volumes in 2141 ms.
 --------SINGLE SAMPLE---------
 SecurityVolume(2505025,ARCANDOR AG O.N.,0.024481245075507377)
 SecurityVolume(2506097,3W POWER S.A. EO -;01,0.018309049977324028)
@@ -186,12 +187,13 @@ SecurityVolume(2505107,BEATE UHSE AG,0.009397740800824493)
 ------------------------------
 
 
-This application completed in 86992 ms.
+This application completed in 74176 ms.
 ~~~
 
 ## Observations
 Notice that in both cases where we compared methodologies, there were no differences between
-them (same row counts and no differing rows). Additionally, the sessionization completed
+them (same row counts and no differing rows). Additionally, the application completed in 
+roughly 74 seconds. Finally, and perhaps most interestingly, the sessionization completed
 in much less time (roughly 10x, an order of magnitude). This is most likely because the
 sessionization logic only shuffles the data once (at least, until the sorting step),
 then maps through each group once to update a state, which it then outputs. Contrarily,
@@ -199,4 +201,4 @@ the join logic requires multiple shuffle, map, and reduce steps.
 
 Given that the outputs are identical for both methodologies in each analysis, and
 sessionization is much more performant, it seems that sessionization is the way to go
-(at least, for this dataset, and given the current constraints). 
+(at least, for this dataset, and given the current constraints).

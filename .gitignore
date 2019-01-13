@@ -6,4 +6,3 @@ metastore_db/
 spark-warehouse/
 target/
 dependency-reduced-pom.xml
-src/main/resources/data-set/

@@ -46,7 +46,6 @@ class DataFrameComparison(sparkSession: SparkSession,
       stringJoiner.add(row.toString)
     }
     stringJoiner.add(OutputStringUtils.get30Dashes)
-    stringJoiner.add("")
 
     TotalDiff.unpersist()
 

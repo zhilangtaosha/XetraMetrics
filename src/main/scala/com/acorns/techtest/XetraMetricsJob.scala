@@ -31,12 +31,12 @@ class XetraMetricsJob(sparkSession: SparkSession) {
     }
     stringJoiner.add(OutputStringUtils.get30Dashes)
     stringJoiner.add("")
+    stringJoiner.add("")
 
     stringJoiner
       .add(s"/${OutputStringUtils.repeatChar(29, '*')}")
       .add(s"${OutputStringUtils.repeatChar(5, ' ')}DAILY BIGGEST WINNERS")
       .add(s"${OutputStringUtils.repeatChar(29, '*')}/")
-      .add("")
       .add("")
       .add(getDailyBiggestWinnersSample(tradeActivities))
       .add("")
@@ -87,6 +87,7 @@ class XetraMetricsJob(sparkSession: SparkSession) {
       stringJoiner.add(row.toString)
     }
     stringJoiner.add(OutputStringUtils.get30Dashes)
+    stringJoiner.add("")
 
     stopWatch.reset()
     stopWatch.start()
@@ -101,6 +102,7 @@ class XetraMetricsJob(sparkSession: SparkSession) {
       stringJoiner.add(row.toString)
     }
     stringJoiner.add(OutputStringUtils.get30Dashes)
+    stringJoiner.add("")
 
     val dailyBiggestWinnerComparison = new DataFrameComparison(
       sparkSession,
@@ -139,6 +141,7 @@ class XetraMetricsJob(sparkSession: SparkSession) {
       stringJoiner.add(row.toString)
     }
     stringJoiner.add(OutputStringUtils.get30Dashes)
+    stringJoiner.add("")
 
     stopWatch.reset()
     stopWatch.start()
@@ -153,6 +156,7 @@ class XetraMetricsJob(sparkSession: SparkSession) {
       stringJoiner.add(row.toString)
     }
     stringJoiner.add(OutputStringUtils.get30Dashes)
+    stringJoiner.add("")
 
     val dailyBiggestWinnerComparison = new DataFrameComparison(
       sparkSession,

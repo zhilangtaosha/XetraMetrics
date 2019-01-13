@@ -1,5 +1,26 @@
 # XetraMetrics
-This application runs a few quick analyses against the public XETRA dataset from Deutsche Bank.
+This application runs three separate analyses against the public XETRA
+dataset from Deutsche Bank:
+1. Daily biggest winners: one record per date, sorted by date,
+representing the stock/fund with the largest gain for the given date
+2. Daily biggest volumes: one record per date, sorted by date,
+representing the stock/fund with the highest trade volume for the given date
+3. Overall implied volume: one record per stock/fund,
+sorted in descending order by the implied volume amount for each stock
+
+For the first 2 analyses, it also compares two methodologies: sessionization and a
+SQL-like approach that consists of joining multiple datasets, much like joining tables
+in an RDBMS.
+
+I wanted to run this comparison of sessionization and joining logic to demonstrate
+different approaches to analyzing this data, as well as to determine which approach
+might be "better."
+
+*<sub>\*I say "better" because there are so many constraints that don't apply to this
+small app running on a local machine - but that would matter in a production system -
+that I am hesitant to make a real conclusion. This was simply an experiment and
+demonstration.</sub>*
+
 
 ## Compiling and packaging the application
 ~~~
@@ -13,14 +34,6 @@ spark2-submit \
 ~~~
 
 ## Verifying the output
-The application runs three separate analyses:
-1. Daily biggest winners: one record per date, sorted by date,
-representing the stock/fund with the largest gain for the given date
-2. Daily biggest volumes: one record per date, sorted by date,
-representing the stock/fund with the highest trade volume for the given date
-3. Overall implied volume: one record per stock/fund,
-sorted in descending order by the implied volume amount for each stock
-
 First, a 10 record sample of the XETRA source data will be printed to stdout, along with the total row count of the source data.
 
 Next, for each analysis, several items will be printed to stdout:
@@ -28,8 +41,6 @@ Next, for each analysis, several items will be printed to stdout:
 - A row count for the entire data set
 - Run time in milliseconds
 
-For the first 2 analyses, it also compares two methodologies: sessionization and a SQL-like approach that consists of
-joining multiple datasets, much like joining tables in an RDBMS.
 The above information will be printed to stdout for each methodology, as will a diff of the two output datasets.
 This is to inform the user which approach might be better: as long as the output datasets are the same,
 then performance is the only remaining consideration. 
@@ -151,8 +162,12 @@ This application completed in 86992 ms.
 ~~~
 
 ## Observations
-Notice that in both cases where we compared methodologies, the sessionization completed
+Notice that in both cases where we compared methodologies, there were no differences between
+them (same row counts and no differing rows). Additionally, the sessionization completed
 in much less time (roughly 10x, an order of magnitude). This is most likely because the
 sessionization logic only shuffles the data once (at least, until the sorting step),
 then maps through each group once to update a state, which it then outputs. Contrarily,
 the join logic requires multiple shuffle, map, and reduce steps.
+
+Given that the outputs are identical for both methodologies in each analysis, and
+sessionization is much more performant, it seems that sessionization is the way to go. 

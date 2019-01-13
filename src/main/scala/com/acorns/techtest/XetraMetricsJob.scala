@@ -37,6 +37,7 @@ class XetraMetricsJob(sparkSession: SparkSession) {
       .add(s"${OutputStringUtils.repeatChar(5, ' ')}DAILY BIGGEST WINNERS")
       .add(s"${OutputStringUtils.repeatChar(29, '*')}/")
       .add("")
+      .add("")
       .add(getDailyBiggestWinnersSample(tradeActivities))
       .add("")
       .add("")

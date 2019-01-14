@@ -2,48 +2,27 @@ package com.acorns.techtest
 
 import java.util.StringJoiner
 
-import com.acorns.techtest.util.OutputStringUtils
-import org.apache.commons.lang3.time.StopWatch
+import com.acorns.techtest.util.CustomStringUtils
 import org.apache.spark.sql.functions.lit
 import org.apache.spark.sql.{DataFrame, SparkSession}
 
-abstract class DataFrameComparison(sparkSession: SparkSession,
-                                   controlDataFrame: DataFrame,
-                                   dataFrame1: DataFrame,
-                                   dataFrame2: DataFrame) {
+abstract class DataFrameUAT(sparkSession: SparkSession,
+                            controlDataFrame: DataFrame,
+                            dataFrame1: DataFrame,
+                            dataFrame2: DataFrame) {
 
   def getComparisonSamples(label1: String, label2: String): String = {
     val stringJoiner = new StringJoiner("\n")
-    val stopWatch = new StopWatch
 
     controlDataFrame.cache()
     dataFrame1.cache()
     dataFrame2.cache()
 
-    stopWatch.start()
     val label1Count = dataFrame1.count()
-    stopWatch.stop()
-    stringJoiner.add(s"Found $label1Count records by $label1 in ${stopWatch.getTime} ms.")
-    stopWatch.reset()
+    stringJoiner.add(s"Found $label1Count records by $label1.")
 
-    stringJoiner.add(OutputStringUtils.getSampleTitle(label1))
-    dataFrame1.limit(10).collect().foreach{ row =>
-      stringJoiner.add(row.toString)
-    }
-    stringJoiner.add(OutputStringUtils.get30Dashes)
-    stringJoiner.add("")
-
-    stopWatch.start()
     val label2Count = dataFrame2.count()
-    stopWatch.stop()
-    stringJoiner.add(s"Found $label2Count records by $label2 in ${stopWatch.getTime} ms.")
-    stopWatch.reset()
-
-    stringJoiner.add(OutputStringUtils.getSampleTitle(label2))
-    dataFrame2.limit(10).collect().foreach{ row =>
-      stringJoiner.add(row.toString)
-    }
-    stringJoiner.add(OutputStringUtils.get30Dashes)
+    stringJoiner.add(s"Found $label2Count records by $label2.")
     stringJoiner.add("")
 
     val unionedDataFrames =
@@ -61,13 +40,18 @@ abstract class DataFrameComparison(sparkSession: SparkSession,
     stringJoiner.add(s"There are $diffRecords unique records among the $label1, $label2, and control datasets.")
 
     if (diffRecords > 0) {
+      stringJoiner.add("")
+      stringJoiner.add(CustomStringUtils.getSampleTitle("DIFF"))
+
       joinDataFrames(unionedDataFrames, groupedDataFrame)
         .sort("uniqueIdentifier", "DataFrameName")
-        .limit(15)
+        .limit(10)
         .collect()
         .foreach{row =>
           stringJoiner.add(row.toString)
         }
+
+      stringJoiner.add(CustomStringUtils.get30Dashes)
     }
 
     controlDataFrame.unpersist()

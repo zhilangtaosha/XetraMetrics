@@ -1,13 +1,13 @@
 package com.acorns.techtest.biggestwinner
 
-import com.acorns.techtest.DataFrameComparison
+import com.acorns.techtest.DataFrameUAT
 import org.apache.spark.sql.functions.count
 import org.apache.spark.sql.{DataFrame, SparkSession}
 
-class DailyBiggestWinnersComparison(sparkSession: SparkSession,
-                                    controlDataFrame: DataFrame,
-                                    dataFrame1: DataFrame,
-                                    dataFrame2: DataFrame) extends DataFrameComparison(
+class DailyBiggestWinnersUAT(sparkSession: SparkSession,
+                             controlDataFrame: DataFrame,
+                             dataFrame1: DataFrame,
+                             dataFrame2: DataFrame) extends DataFrameUAT(
   sparkSession,
   controlDataFrame,
   dataFrame1,

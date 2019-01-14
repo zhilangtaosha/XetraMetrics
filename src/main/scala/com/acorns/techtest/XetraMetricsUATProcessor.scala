@@ -2,24 +2,21 @@ package com.acorns.techtest
 
 import java.util.StringJoiner
 
-import com.acorns.techtest.biggestvolume.{DailyBiggestVolumes, DailyBiggestVolumesComparison}
-import com.acorns.techtest.biggestwinner.{DailyBiggestWinners, DailyBiggestWinnersComparison}
+import com.acorns.techtest.biggestvolume.{DailyBiggestVolumes, DailyBiggestVolumesUAT}
+import com.acorns.techtest.biggestwinner.{DailyBiggestWinners, DailyBiggestWinnersUAT}
 import com.acorns.techtest.schema.TradeActivity
-import com.acorns.techtest.securityvolume.SecurityVolumes
-import com.acorns.techtest.util.{OutputStringUtils, ResourceUtils}
-import org.apache.commons.lang3.time.StopWatch
+import com.acorns.techtest.securityvolume.BiggestVolumes
+import com.acorns.techtest.util.{CustomStringUtils, ResourceUtils}
 import org.apache.spark.sql.{Dataset, SparkSession}
 
-class XetraMetricsJob(filePath: String, sparkSession: SparkSession) {
-  import sparkSession.implicits._
+class XetraMetricsUATProcessor(filePath: String, sparkSession: SparkSession) {
 
-  def showMetrics(): Unit = {
-    val stopWatch = new StopWatch
-    stopWatch.start()
+  private val xetraSourceData = new XetraSourceData(filePath, sparkSession)
 
+  def showUATResults(): Unit = {
     val stringJoiner = new StringJoiner("\n")
 
-    val tradeActivities = getTradeActivities(sparkSession)
+    val tradeActivities = xetraSourceData.getTradeActivities(sparkSession)
     tradeActivities.cache()
 
     val tradeActivitiesCount = tradeActivities.count()
@@ -28,47 +25,43 @@ class XetraMetricsJob(filePath: String, sparkSession: SparkSession) {
 
     tradeActivities.createOrReplaceTempView("xetra")
 
-    stringJoiner.add(OutputStringUtils.getSampleTitle("source"))
+    stringJoiner.add(CustomStringUtils.getSampleTitle("source"))
     tradeActivities.limit(10).collect().foreach{ row =>
       stringJoiner.add(row.toString)
     }
-    stringJoiner.add(OutputStringUtils.get30Dashes)
+    stringJoiner.add(CustomStringUtils.get30Dashes)
     stringJoiner.add("")
     stringJoiner.add("")
 
     tradeActivities.unpersist()
 
     stringJoiner
-      .add(s"/${OutputStringUtils.repeatChar(29, '*')}")
-      .add(s"${OutputStringUtils.repeatChar(5, ' ')}DAILY BIGGEST WINNERS")
-      .add(s"${OutputStringUtils.repeatChar(29, '*')}/")
+      .add(s"/${CustomStringUtils.repeatChar(29, '*')}")
+      .add(s"${CustomStringUtils.repeatChar(5, ' ')}DAILY BIGGEST WINNERS")
+      .add(s"${CustomStringUtils.repeatChar(29, '*')}/")
       .add("")
-      .add(getDailyBiggestWinnersSample(tradeActivities))
+      .add(getDailyBiggestWinnersUAT(tradeActivities))
       .add("")
       .add("")
-//      .add(s"/${OutputStringUtils.repeatChar(29, '*')}")
-//      .add(s"${OutputStringUtils.repeatChar(5, ' ')}DAILY BIGGEST VOLUMES")
-//      .add(s"${OutputStringUtils.repeatChar(29, '*')}/")
-//      .add("")
-//      .add(getDailyBiggestVolumesSample(tradeActivities))
-//      .add("")
-//      .add("")
-//      .add(s"/${OutputStringUtils.repeatChar(29, '*')}")
-//      .add(s"${OutputStringUtils.repeatChar(5, ' ')}MOST TRADED STOCK/ETF")
-//      .add(s"${OutputStringUtils.repeatChar(29, '*')}/")
-//      .add("")
-//      .add(getBiggestVolumesSample(tradeActivities))
-//      .add("")
-//      .add("")
-
-    stringJoiner.add(
-      s"This application completed in ${stopWatch.getTime} ms."
-    )
+      .add(s"/${CustomStringUtils.repeatChar(29, '*')}")
+      .add(s"${CustomStringUtils.repeatChar(5, ' ')}DAILY BIGGEST VOLUMES")
+      .add(s"${CustomStringUtils.repeatChar(29, '*')}/")
+      .add("")
+      .add(getDailyBiggestVolumesUAT(tradeActivities))
+      .add("")
+      .add("")
+      .add(s"/${CustomStringUtils.repeatChar(29, '*')}")
+      .add(s"${CustomStringUtils.repeatChar(5, ' ')}MOST TRADED STOCK/ETF")
+      .add(s"${CustomStringUtils.repeatChar(29, '*')}/")
+      .add("")
+      .add(getBiggestVolumesUAT(tradeActivities))
+      .add("")
+      .add("")
 
     println(stringJoiner.toString)
   }
 
-  private def getDailyBiggestWinnersSample(tradeActivities: Dataset[TradeActivity]): String = {
+  private def getDailyBiggestWinnersUAT(tradeActivities: Dataset[TradeActivity]): String = {
     val stringJoiner = new StringJoiner("\n")
 
     val dailyBiggestWinners = new DailyBiggestWinners(sparkSession)
@@ -79,7 +72,7 @@ class XetraMetricsJob(filePath: String, sparkSession: SparkSession) {
     val dailyBiggestWinnersBySessionizing = dailyBiggestWinners.getDailyBiggestWinnersBySessionizing(tradeActivities)
     val dailyBiggestWinnersByJoining = dailyBiggestWinners.getDailyBiggestWinnersByJoining(tradeActivities)
 
-    val dataFrameComparison = new DailyBiggestWinnersComparison(
+    val dataFrameComparison = new DailyBiggestWinnersUAT(
       sparkSession,
       controlDataFrame,
       dailyBiggestWinnersBySessionizing.toDF(),
@@ -91,7 +84,7 @@ class XetraMetricsJob(filePath: String, sparkSession: SparkSession) {
     stringJoiner.toString
   }
 
-  private def getDailyBiggestVolumesSample(tradeActivities: Dataset[TradeActivity]): String = {
+  private def getDailyBiggestVolumesUAT(tradeActivities: Dataset[TradeActivity]): String = {
     val stringJoiner = new StringJoiner("\n")
 
     val dailyBiggestVolumes = new DailyBiggestVolumes(sparkSession)
@@ -102,7 +95,7 @@ class XetraMetricsJob(filePath: String, sparkSession: SparkSession) {
     val dailyBiggestVolumesBySessionizing = dailyBiggestVolumes.getDailyBiggestVolumesBySessionizing(tradeActivities)
     val dailyBiggestVolumesByJoining = dailyBiggestVolumes.getDailyBiggestVolumesByJoining(tradeActivities)
 
-    val dataFrameComparison = new DailyBiggestVolumesComparison(
+    val dataFrameComparison = new DailyBiggestVolumesUAT(
       sparkSession,
       controlDataFrame,
       dailyBiggestVolumesBySessionizing.toDF(),
@@ -114,7 +107,7 @@ class XetraMetricsJob(filePath: String, sparkSession: SparkSession) {
     stringJoiner.toString
   }
 
-  private def getBiggestVolumesSample(tradeActivities: Dataset[TradeActivity]): String = {
+  private def getBiggestVolumesUAT(tradeActivities: Dataset[TradeActivity]): String = {
     val stringJoiner = new StringJoiner("\n")
 
     val dailyBiggestVolumes = new DailyBiggestVolumes(sparkSession)
@@ -122,9 +115,9 @@ class XetraMetricsJob(filePath: String, sparkSession: SparkSession) {
     val controlSql = ResourceUtils.getTextFromResource("/example-queries/xetra_instruments_with_highest_volume.sql", "\n")
     val controlDataFrame = sparkSession.sql(controlSql)
 
-    val securityVolumes = new SecurityVolumes(sparkSession).getSecurityVolumes(tradeActivities)
+    val securityVolumes = new BiggestVolumes(sparkSession).getBiggestVolumes(tradeActivities)
 
-    val dataFrameComparison = new SecurityVolumeComparison(
+    val dataFrameComparison = new BiggestVolumesUAT(
       sparkSession,
       controlDataFrame,
       securityVolumes.toDF()
@@ -133,13 +126,5 @@ class XetraMetricsJob(filePath: String, sparkSession: SparkSession) {
     stringJoiner.add(dataFrameComparison.getComparisonSamples("sessionizing"))
 
     stringJoiner.toString
-  }
-
-  private def getTradeActivities(sparkSession: SparkSession): Dataset[TradeActivity] = {
-    sparkSession.read
-      .option("header", "true")
-      .option("inferSchema", true)
-      .csv(s"$filePath/*/*.csv")
-      .as[TradeActivity]
   }
 }

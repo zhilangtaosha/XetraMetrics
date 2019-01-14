@@ -2,33 +2,22 @@ package com.acorns.techtest
 
 import java.util.StringJoiner
 
-import com.acorns.techtest.util.OutputStringUtils
-import org.apache.commons.lang3.time.StopWatch
+import com.acorns.techtest.util.CustomStringUtils
 import org.apache.spark.sql.functions.{count, lit}
 import org.apache.spark.sql.{DataFrame, SparkSession}
 
-class SecurityVolumeComparison(sparkSession: SparkSession,
-                               controlDataFrame: DataFrame,
-                               dataFrame1: DataFrame) {
+class BiggestVolumesUAT(sparkSession: SparkSession,
+                        controlDataFrame: DataFrame,
+                        dataFrame1: DataFrame) {
 
   def getComparisonSamples(label1: String): String = {
     val stringJoiner = new StringJoiner("\n")
-    val stopWatch = new StopWatch
 
     controlDataFrame.cache()
     dataFrame1.cache()
 
-    stopWatch.start()
     val label1Count = dataFrame1.count()
-    stopWatch.stop()
-    stringJoiner.add(s"Found $label1Count records by $label1 in ${stopWatch.getTime} ms.")
-    stopWatch.reset()
-
-    stringJoiner.add(OutputStringUtils.getSampleTitle(label1))
-    dataFrame1.limit(10).collect().foreach{ row =>
-      stringJoiner.add(row.toString)
-    }
-    stringJoiner.add(OutputStringUtils.get30Dashes)
+    stringJoiner.add(s"Found $label1Count records by $label1.")
     stringJoiner.add("")
 
     val unionedDataFrames =
@@ -42,9 +31,12 @@ class SecurityVolumeComparison(sparkSession: SparkSession,
     groupedDataFrame.cache()
     val diffRecords = groupedDataFrame.count()
 
-    stringJoiner.add(s"There are $diffRecords unique records among the $label1, and control datasets.")
+    stringJoiner.add(s"There are $diffRecords unique records between the $label1 and control datasets.")
 
     if (diffRecords > 0) {
+      stringJoiner.add("")
+      stringJoiner.add(CustomStringUtils.getSampleTitle("DIFF"))
+
       joinDataFrames(unionedDataFrames, groupedDataFrame)
         .sort("uniqueIdentifier", "DataFrameName")
         .limit(10)
@@ -52,6 +44,8 @@ class SecurityVolumeComparison(sparkSession: SparkSession,
         .foreach{row =>
           stringJoiner.add(row.toString)
         }
+
+      stringJoiner.add(CustomStringUtils.get30Dashes)
     }
 
     controlDataFrame.unpersist()

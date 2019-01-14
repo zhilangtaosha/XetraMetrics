@@ -2,7 +2,7 @@ package com.acorns.techtest
 
 import com.acorns.techtest.util.SparkUtils
 
-object XetraMetrics {
+object XetraMetricsUAT {
   import org.apache.log4j.Logger
   import org.apache.log4j.Level
 
@@ -15,8 +15,8 @@ object XetraMetrics {
 
     val sparkSession = SparkUtils.getSparkSession("XetraMetrics")
 
-    val xetraMetricsProcessor = new XetraMetricsProcessor(filePath, sparkSession)
+    val xetraMetricsUATProcessor = new XetraMetricsUATProcessor(filePath, sparkSession)
 
-    xetraMetricsProcessor.showMetrics()
+    xetraMetricsUATProcessor.showUATResults()
   }
 }

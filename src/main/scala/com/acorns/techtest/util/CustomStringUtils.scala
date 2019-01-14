@@ -1,6 +1,6 @@
 package com.acorns.techtest.util
 
-object OutputStringUtils {
+object CustomStringUtils {
   def repeatChar(n: Int, c: Char): String = List.fill(n)(c).mkString
 
   def get30Dashes: String = repeatChar(30, '-')

@@ -1,3 +1,8 @@
-select description, securityid, avg((high - low) / low) as implied_vol from xetra
-group by description, securityid
-order by implied_vol desc
+select
+    cast(SecurityID as string) as uniqueIdentifier,
+    SecurityID,
+    SecurityDesc as Description,
+    round(avg((MaxPrice - MinPrice) / MinPrice), 4) as ImpliedVolume
+from xetra
+group by SecurityDesc, SecurityID
+order by ImpliedVolume desc

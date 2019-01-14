@@ -1,9 +1,10 @@
 package com.acorns.techtest.util
 
+import scala.io.Source
+
 object ResourceUtils {
-  def getLocalPath(relativePath: String): String = {
-    val basePath = System.getProperty("user.dir")
-    val fixedRelativePath = if (relativePath.startsWith("/")) relativePath else s"/" + relativePath
-    basePath + fixedRelativePath
+  def getTextFromResource(filePath: String, delimiter: String): String = {
+    val stream = getClass.getResourceAsStream(filePath)
+    Source.fromInputStream(stream).getLines.mkString(delimiter)
   }
 }

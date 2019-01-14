@@ -1,6 +1,7 @@
 package com.acorns.techtest.biggestvolume
 
 import java.lang.Math.max
+import java.text.DecimalFormat
 
 import com.acorns.techtest.biggestvolume.schema.{DailyBiggestVolume, DailyMaxAmount, DailySecurityVolumeAgg}
 import com.acorns.techtest.schema.{DailySecurity, SecurityKey, TradeActivity}
@@ -44,11 +45,15 @@ class DailyBiggestVolumes(sparkSession: SparkSession) {
 
         securitiesMap.toArray
           .map{case (securityKey, dailySecurityVolumeAgg) =>
+            val df = new DecimalFormat("#.####")
+            val double = dailySecurityVolumeAgg.TradeAmountMM / "1e6".toDouble
+
             DailyBiggestVolume(
+              s"$date.${securityKey.SecurityID}",
               date,
               securityKey.SecurityID,
               securityKey.Description,
-              dailySecurityVolumeAgg.TradeAmountMM / "1e6".toDouble
+              df.format(double).toDouble
             )
           }
           .maxBy(_.MaxAmount)
@@ -75,11 +80,14 @@ class DailyBiggestVolumes(sparkSession: SparkSession) {
         "inner"
       )
       .map{case (dailyMaxAmount, dailySecurityVolumeAgg) =>
+        val df = new DecimalFormat("#.####")
+
         DailyBiggestVolume(
+          s"${dailyMaxAmount.Date}.${dailySecurityVolumeAgg.SecurityID}",
           dailyMaxAmount.Date,
           dailySecurityVolumeAgg.SecurityID,
           dailySecurityVolumeAgg.Description,
-          dailyMaxAmount.MaxAmount
+          df.format(dailyMaxAmount.MaxAmount).toDouble
         )
       }
       .sort($"Date", desc("MaxAmount"))

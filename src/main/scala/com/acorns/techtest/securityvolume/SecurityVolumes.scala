@@ -1,5 +1,7 @@
 package com.acorns.techtest.securityvolume
 
+import java.text.DecimalFormat
+
 import com.acorns.techtest.schema.{SecurityKey, TradeActivity}
 import com.acorns.techtest.securityvolume.schema.SecurityVolume
 import org.apache.spark.sql.{Dataset, SparkSession}
@@ -26,6 +28,7 @@ class SecurityVolumes(sparkSession: SparkSession) {
             SecurityKey(securityId, description),
             (
               SecurityVolume(
+                securityId.toString,
                 securityId,
                 description,
                 0.0
@@ -48,8 +51,11 @@ class SecurityVolumes(sparkSession: SparkSession) {
 
         securitiesMap.toArray
           .map{case (securityKey, (biggestVolume, count)) =>
+            val df = new DecimalFormat("#.####")
+            val double = biggestVolume.ImpliedVolume / count
+
             biggestVolume.copy(
-              ImpliedVolume = biggestVolume.ImpliedVolume / count
+              ImpliedVolume = df.format(double).toDouble
             )
           }
       }

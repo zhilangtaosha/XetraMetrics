@@ -1,5 +1,6 @@
 package com.acorns.techtest.securityvolume.schema
 
-case class SecurityVolume(SecurityID: Int,
+case class SecurityVolume(uniqueIdentifier: String,
+                          SecurityID: Int,
                           Description: String,
                           ImpliedVolume: Double)

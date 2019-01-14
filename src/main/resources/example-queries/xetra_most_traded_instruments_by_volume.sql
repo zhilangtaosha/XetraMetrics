@@ -1,28 +1,31 @@
-select sumtable.date, sumtable.securityid, sumtable.description, maxtable.maxamount
+select
+    concat(sumtable.Date, '.', sumtable.SecurityID) as uniqueIdentifier,
+    sumtable.Date,
+    sumtable.SecurityID,
+    sumtable.Description,
+    round(maxtable.MaxAmount, 4) as MaxAmount
 
 from (
-    select date, max(tradeamountmm) as maxamount
+    select Date, max(TradeAmountMM) as MaxAmount
 
     from (
 
-        select securityid, description, date, sum(open * tradedvolume) / 1e6 as tradeamountmm
+        select SecurityID, SecurityDesc as Description, Date, sum(StartPrice * TradedVolume) / 1e6 as TradeAmountMM
         from xetra
-        where currency = 'EUR'
-        group by securityid, description, date
-        order by date asc, tradeamountmm desc
+        group by SecurityID, Description, Date
+        order by Date asc, TradeAmountMM desc
     )
 
-    group by date
+    group by Date
 ) as maxtable
 
 left join (
-    select securityid, description, date, sum(open * tradedvolume) / 1e6 as tradeamountmm
+    select SecurityID, SecurityDesc as Description, Date, sum(StartPrice * TradedVolume) / 1e6 as TradeAmountMM
     from xetra
-    where currency = 'EUR'
-    group by securityid, description, date
-    order by date asc, tradeamountmm desc
+    group by SecurityID, Description, Date
+    order by Date asc, TradeAmountMM desc
 ) as sumtable
 
-on sumtable.tradeamountmm = maxtable.maxamount and sumtable.date = maxtable.date
+on sumtable.TradeAmountMM = maxtable.MaxAmount and sumtable.Date = maxtable.Date
 
-order by sumtable.date asc, maxtable.maxamount desc
+order by sumtable.Date asc, maxtable.MaxAmount desc

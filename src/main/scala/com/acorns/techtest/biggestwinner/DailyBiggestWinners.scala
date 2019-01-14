@@ -1,6 +1,7 @@
 package com.acorns.techtest.biggestwinner
 
 import java.lang.Math.max
+import java.text.DecimalFormat
 import java.time.LocalTime
 
 import com.acorns.techtest.biggestwinner.schema._
@@ -64,11 +65,15 @@ class DailyBiggestWinners(sparkSession: SparkSession) {
 
         securitiesMap.toArray
           .map { case (securityKey, dailySecuritySession) =>
+            val df = new DecimalFormat("#.####")
+            val double = (dailySecuritySession.EndPrice - dailySecuritySession.StartPrice) / dailySecuritySession.StartPrice
+
             DailyBiggestWinner(
+              new StringBuilder().append(date).append(".").append(securityKey.SecurityID).toString(),
               date,
               securityKey.SecurityID,
               securityKey.Description,
-              (dailySecuritySession.EndPrice - dailySecuritySession.StartPrice) / dailySecuritySession.StartPrice
+              df.format(double).toDouble
             )
           }
           .maxBy(_.PercentChange)
@@ -93,11 +98,14 @@ class DailyBiggestWinners(sparkSession: SparkSession) {
         "left_outer"
       )
       .map{case (maxReturn, allReturn) =>
+        val df = new DecimalFormat("#.####")
+
         DailyBiggestWinner(
+          new StringBuilder().append(allReturn.Date).append(".").append(allReturn.SecurityID).toString(),
           allReturn.Date,
           allReturn.SecurityID,
           allReturn.Description,
-          allReturn.PercentChange
+          df.format(allReturn.PercentChange).toDouble
         )
       }
       .sort("Date")
